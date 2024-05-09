@@ -101,15 +101,19 @@ export const logueoUsuario = async(req, res) =>{
     try{
         const respuesta = await pool.query(`CALL sp_BuscarUsuario('${usuario}');`);
         if (respuesta[0][0]==0){
-            const error = new Error("Usuario no existe");
-            res.status(404).json({ error: error.message })
+            // const error = new Error();
+            // res.status(404).json({ error: error.message })
+            error(req, res, 404, "Usuario no existe" );
             return;
             
         }
-        res.json(respuesta[0]);
+        // res.json(respuesta[0]);
+        success(req, res, 201, respuesta[0] );
 
-    } catch (error) {
-        res.json(error);
+    } catch (e) {
+        // console.error("Error en el servidor", e);
+        // res.status(500).json({ error: "Error no se puedo hacer nada"})
+        error(req, res, 500, "Error em el servidor, por favor intentelo de nuevo" );
 
     }
 
