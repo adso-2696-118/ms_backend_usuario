@@ -4,6 +4,7 @@
 import {success, error} from "../message/browser.js"
 import pool from "../config/db.mysql.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 config();
 
@@ -97,7 +98,7 @@ export const eliminarUsuario = async(req, res) =>{
 export const logueoUsuario = async(req, res) =>{
     const {usuario, clave} = req.body;
     // hay que comparar contraseña de la base de datos a la que le estamos mandando
-    const hash = await bcrypt.hash(clave, 2); 
+    // const hash = await bcrypt.hash(clave, 2); 
     try{
         const respuesta = await pool.query(`CALL sp_BuscarUsuario('${usuario}');`);
         if (respuesta[0][0]==0){
@@ -108,7 +109,14 @@ export const logueoUsuario = async(req, res) =>{
             
         }
         // res.json(respuesta[0]);
-        success(req, res, 201, respuesta[0] );
+        // console.log(respuesta[0][0][0].CLAVE);
+        const match = await bcrypt.compare(clave, respuesta[0][0][0].CLAVE);
+        if (!match){
+            error(req, res, 401, "Clave errada" );
+            return;
+        }
+
+        success(req, res, 200, respuesta[0] );
 
     } catch (e) {
         // console.error("Error en el servidor", e);
