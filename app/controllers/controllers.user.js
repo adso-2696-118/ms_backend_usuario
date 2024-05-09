@@ -98,29 +98,37 @@ export const eliminarUsuario = async(req, res) =>{
 export const logueoUsuario = async(req, res) =>{
     const {usuario, clave} = req.body;
     // hay que comparar contraseña de la base de datos a la que le estamos mandando
-    // const hash = await bcrypt.hash(clave, 2); 
+   
     try{
         const respuesta = await pool.query(`CALL sp_BuscarUsuario('${usuario}');`);
         if (respuesta[0][0]==0){
-            // const error = new Error();
-            // res.status(404).json({ error: error.message })
             error(req, res, 404, "Usuario no existe" );
             return;
             
         }
-        // res.json(respuesta[0]);
-        // console.log(respuesta[0][0][0].CLAVE);
+       
         const match = await bcrypt.compare(clave, respuesta[0][0][0].CLAVE);
         if (!match){
             error(req, res, 401, "Clave errada" );
             return;
         }
-
-        success(req, res, 200, respuesta[0] );
+        let payloan = {
+            "usuario" : usuario,
+            "nombre" : respuesta[0][0][0].NOMBRE
+        };
+    // Creacion del token, la funcion del login es crear el token, los unicos que pueden crear un token son los ya registrados
+    // Solo se puede editar el usuario si este tiene un token valido
+        let token = await jwt.sign(
+            payloan,
+            process.env.TOKEN_PRIVATEKEY,
+            {
+                expiresIn : process.env.TPKEN_EXPIRES_IN
+            });
+    // Es como si le estuvuerramos diciendo: token : token
+        success(req, res, 200, {token} );
 
     } catch (e) {
-        // console.error("Error en el servidor", e);
-        // res.status(500).json({ error: "Error no se puedo hacer nada"})
+       
         error(req, res, 500, "Error em el servidor, por favor intentelo de nuevo" );
 
     }
