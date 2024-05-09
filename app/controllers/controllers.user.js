@@ -118,6 +118,7 @@ export const logueoUsuario = async(req, res) =>{
         };
     // Creacion del token, la funcion del login es crear el token, los unicos que pueden crear un token son los ya registrados
     // Solo se puede editar el usuario si este tiene un token valido
+    // La unica fporma de crear una ruta es con autorizacion
         let token = await jwt.sign(
             payloan,
             process.env.TOKEN_PRIVATEKEY,
