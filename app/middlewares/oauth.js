@@ -14,6 +14,7 @@ export const verifyToken = async(req, res, next) =>{
         process.env.TOKEN_PRIVATEKEY 
     );
     next();
+    // si es valido el codigo que siga logueandose
 
     
 } catch (e) {
