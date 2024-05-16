@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  
   "scripts": {
-    "dev": "nodemon app/index.js --exec babel-node",
-    "start": "node dist/index.js",
+    "dev": "nodemon ./app/index.js --exec babel-node",
+    "swaggerdev": "node ./app/tools/swagger.js",
     "build": "babel app --out-dir dist",
-    "swagger": "node ./app/tools/swagger.js"
+    "swagger": "node ./dist/tools/swagger.js",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
